@@ -1,6 +1,13 @@
 <?php
-echo "hellp";
 
+require 'db.php';
+
+// Fetch all products from the 'product' table
+$productQuery = "SELECT * FROM product";
+$result = $conn->query($productQuery);
+
+// Close the database connection
+  
 ?>
 
 <!DOCTYPE html>
@@ -106,45 +113,38 @@ echo "hellp";
     <!-- end of header -->
 
     <!-- Special Section -->
-    <section id="special" class="py-5">
-        <div class="container">
-            <div class="title text-center py-5">
-                <h2 class="position-relative d-inline-block">Special Honey Selection</h2>
-            </div>
-
-            <div class="special-list row g-0 justify-content-center">
-                <div class="col-md-6 col-lg-4 col-xl-3 p-2">
-                    <div class="special-img position-relative overflow-hidden">
-                        <img src="../resized_image_2.png" class="w-100">
-                        <span
-                            class="position-absolute d-flex align-items-center justify-content-center text-primary fs-4">
-                            <i class="fas fa-heart"></i>
-                        </span>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-capitalize mt-3 mb-1">Pure Wildflower Honey</p>
-                        <span class="fw-bold d-block">$12.99</span>
-                        <a href="./Buy.html" class="btn btn-primary mt-3">Add to Cart</a>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4 col-xl-3 p-2">
-                    <div class="special-img position-relative overflow-hidden">
-                        <img src="../resized_image_1.png" class="w-100">
-                        <span
-                            class="position-absolute d-flex align-items-center justify-content-center text-primary fs-4">
-                            <i class="fas fa-heart"></i>
-                        </span>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-capitalize mt-3 mb-1">Organic Clover Honey</p>
-                        <span class="fw-bold d-block">$15.50</span>
-                        <a href="./Buy.html" class="btn btn-primary mt-3">Add to Cart</a>
-                    </div>
-                </div>
-            </div>
+  
+<section id="special" class="py-5">
+    <div class="container">
+        <div class="title text-center py-5">
+            <h2 class="position-relative d-inline-block">Special Honey Selection</h2>
         </div>
-    </section>
+
+        <div class="special-list row g-0 justify-content-center">
+            <?php 
+            // Loop through each product in the result set
+            while($row = $result->fetch_assoc()): 
+                $name = $row['name'];
+                $price = $row['price'];
+                $image_url = $row['image_url'];
+            ?>
+                <div class="col-md-6 col-lg-4 col-xl-3 p-2">
+                    <div class="special-img position-relative overflow-hidden">
+                        <img src="<?php echo $image_url; ?>" class="w-100" alt="<?php echo $name; ?>">
+                        <span class="position-absolute d-flex align-items-center justify-content-center text-primary fs-4">
+                            <i class="fas fa-heart"></i>
+                        </span>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-capitalize mt-3 mb-1"><?php echo $name; ?></p>
+                        <span class="fw-bold d-block"><?php echo $price; ?></span>
+                        <a href="./buy.php?product_id=<?php echo $row['product_id']; ?>" class="btn btn-primary mt-3">Add to Cart</a>
+                    </div>
+                </div>
+            <?php endwhile; ?>
+        </div>
+    </div>
+</section>
     <!-- end of special section -->
 
     <!-- about us -->
