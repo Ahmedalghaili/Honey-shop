@@ -1,6 +1,46 @@
 <?php
-// Ensure no PHP errors are shown before the HTML output starts.
+session_start();
+require 'db.php'; // Make sure your database connection is correct
+
+// Check if the form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
+    $phone = $_POST['phone'];
+
+    // Example validation: Ensure passwords match
+    if ($password !== $confirm_password) {
+        echo "Passwords do not match!";
+        exit;
+    }
+
+    // Hash the password before saving it to the database
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Insert the user data into the 'user' table
+    $query = "INSERT INTO user (username, email, password, phone_number) VALUES (?, ?, ?, ?)";
+    $stmt = $conn->prepare($query);
+
+    // Bind the parameters (username, email, hashed password, phone number)
+    $stmt->bind_param("ssss", $username, $email, $hashed_password, $phone);
+
+    // Execute the statement
+    if ($stmt->execute()) {
+        echo "User registered successfully!";
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+
+    // Close the statement
+    $stmt->close();
+}
+
+// Close the database connection
+$conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -52,10 +92,12 @@
         }
 
         .image-column img {
-            max-width: 250px;
+            max-width: 100%;
             height: auto;
             display: block;
             margin: 0 auto;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .image-column, .form-column {
@@ -73,6 +115,13 @@
             color: white;
             padding: 10px;
         }
+
+        /* Mobile responsiveness for the form and image */
+        @media (max-width: 768px) {
+            .image-column {
+                margin-bottom: 20px;
+            }
+        }
     </style>
 </head>
 
@@ -84,8 +133,7 @@
                 <div class="row d-flex justify-content-center align-items-center h-100">
                     <!-- Image Column -->
                     <div class="col-md-4 col-lg-4 col-xl-4 image-column">
-                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
-                            class="img-fluid" alt="Sample image">
+                        <img src="../IMG-20240921-WA0065.jpg" alt="Sample image">
                     </div>
 
                     <!-- Form Column -->
@@ -127,17 +175,12 @@
                             </div>
 
                             <!-- Checkbox for terms -->
-                            <div class="form-check d-flex justify-content-start mb-4">
-                                <input class="form-check-input me-2" type="checkbox" required />
-                                <label class="form-check-label">
-                                    I agree to the <a href="#!" class="text-body"><u>Terms of Service</u></a>
-                                </label>
-                            </div>
+                          
 
                             <!-- Register button -->
                             <div class="text-center text-lg-start mt-4 pt-2">
                                 <button type="submit" class="btn btn-dark btn-lg">Register</button>
-                                <p class="small fw-bold mt-2 pt-1 mb-0">Already have an account? <a href="#!"
+                                <p class="small fw-bold mt-2 pt-1 mb-0">Already have an account? <a href="./login_users.php"
                                         class="link-danger">Login</a></p>
                             </div>
                         </form>
@@ -148,57 +191,10 @@
     </div>
 
     <!-- Footer -->
-    <div class="footer d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-dark">
-        <div class="text-white mb-3 mb-md-0">
-            Copyright © 2020. All rights reserved.
-        </div>
-        <div>
-            <a href="#!" class="text-white me-4">
-                <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="#!" class="text-white me-4">
-                <i class="fab fa-twitter"></i>
-            </a>
-            <a href="#!" class="text-white me-4">
-                <i class="fab fa-google"></i>
-            </a>
-            <a href="#!" class="text-white">
-                <i class="fab fa-linkedin-in"></i>
-            </a>
-        </div>
-    </div>
+   <?php include('./footer.php') ?>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
-
-<?php
-// Check if the form is submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get the data from the form
-    $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
-    $phone = $_POST['phone'] ?? '';
-
-    // Check for matching passwords
-    if ($password !== $confirm_password) {
-        echo "Passwords do not match!";
-    } else {
-        // Insert into the database
-        require './db.php';
-
-        $stmt = $conn->prepare("INSERT INTO user (username, email, password, phone_number) VALUES (?, ?, ?, ?)");
-        $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-        $stmt->bind_param("ssss", $username, $email, $hashed_password, $phone);
-
-        if ($stmt->execute()) {
-            echo "Registration successful!";
-        } else {
-            echo "Error: dfssdafsd" . $conn->error;
-        }
-
-        $stmt->close();
-    }
-}
-?>

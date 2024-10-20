@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Honey Haven</title>
     <!-- fontawesome cdn -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- bootstrap css -->
     <link rel="stylesheet" href="bootstrap-5.0.2-dist/css/bootstrap.min.css">
     <!-- custom css -->
+     
     <link rel="stylesheet" href="css/main.css">
 </head>
+
 <body>
-    
+
     <!-- navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white py-4 fixed-top">
         <div class="container">
@@ -34,18 +39,30 @@
                 <button type="button" class="btn position-relative">
                     <i class="fa fa-search"></i>
                 </button>
-                
-                <!-- Add Login Icon -->
-                <button type="button" class="btn position-relative" data-bs-toggle="modal" data-bs-target="#loginModal">
-                    <i class="fa fa-user"></i> <!-- Login Icon -->
-                </button>
-                
-                <!-- Add Registration Icon -->
-                <button type="button" class="btn position-relative" data-bs-toggle="modal" data-bs-target="#registerModal">
-                    <i class="fa fa-user-plus"></i> <!-- Registration Icon -->
-                </button>
+
+                <!-- Combined Dropdown Icon Button -->
+                <div class="btn-group">
+                    <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-user"></i> <!-- Icon -->
+                    </button>
+                    <ul class="dropdown-menu">
+                        <!-- Login Option -->
+                        <li>
+                            <a class="dropdown-item" href="login.html">
+                                <i class="fa fa-sign-in"></i> Login
+                            </a>
+                        </li>
+                        <!-- Register Option -->
+                        <li>
+                            <a class="dropdown-item" href="register.html">
+                                <i class="fa fa-user-plus"></i> Register
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
             </div>
-            
+
 
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
                 <span class="navbar-toggler-icon"></span>
@@ -56,15 +73,15 @@
                     <li class="nav-item px-2 py-2">
                         <a class="nav-link text-uppercase text-dark" href="#header">Home</a>
                     </li>
-                 
+
                     <li class="nav-item px-2 py-2">
                         <a class="nav-link text-uppercase text-dark" href="#special">Specials</a>
                     </li>
-                  
+
                     <li class="nav-item px-2 py-2">
                         <a class="nav-link text-uppercase text-dark" href="#about">About Us</a>
                     </li>
-                   
+
                 </ul>
             </div>
         </div>
@@ -106,7 +123,8 @@
                 <div class="col-md-6 col-lg-4 col-xl-3 p-2">
                     <div class="special-img position-relative overflow-hidden">
                         <img src="./resized_image_2.png" class="w-100">
-                        <span class="position-absolute d-flex align-items-center justify-content-center text-primary fs-4">
+                        <span
+                            class="position-absolute d-flex align-items-center justify-content-center text-primary fs-4">
                             <i class="fas fa-heart"></i>
                         </span>
                     </div>
@@ -120,7 +138,8 @@
                 <div class="col-md-6 col-lg-4 col-xl-3 p-2">
                     <div class="special-img position-relative overflow-hidden">
                         <img src="./resized_image_1.png" class="w-100">
-                        <span class="position-absolute d-flex align-items-center justify-content-center text-primary fs-4">
+                        <span
+                            class="position-absolute d-flex align-items-center justify-content-center text-primary fs-4">
                             <i class="fas fa-heart"></i>
                         </span>
                     </div>
@@ -136,40 +155,42 @@
     <!-- end of special section -->
 
     <!-- about us -->
-    <section id="about" class="py-5">
-        <div class="container">
-            <div class="row gy-lg-5 align-items-center">
-                <div class="col-lg-6 order-lg-1 text-center text-lg-start">
-                    <div class="title pt-3 pb-5">
-                        <h2 class="position-relative d-inline-block ms-4">About Honey Haven</h2>
-                    </div>
-                    <p class="lead text-muted">At Honey Haven, we are passionate about bringing you the finest organic honey sourced directly from local farms. Our commitment to sustainable beekeeping ensures that every jar of honey is packed with pure goodness.</p>
-                    <p>We believe in promoting the health benefits of honey while supporting local beekeepers who care for our planet and the bees. From wildflower to clover honey, we offer a variety of flavors to suit every taste.</p>
+   <!-- About Us Section -->
+<section id="about" class="py-5 honey-bg-light">
+    <div class="container">
+        <div class="row gy-lg-5 align-items-center">
+            <div class="col-lg-6 order-lg-1 text-center text-lg-start">
+                <div class="title pt-3 pb-5">
+                    <h2 class="position-relative d-inline-block ms-4 honey-heading">About Honey Haven</h2>
                 </div>
-                <div class="col-lg-6 order-lg-0">
-                    <img src="./images/IMG-20240921-WA0061.jpg" alt="About Honey Haven" class="img-fluid">
-                </div>
+                <p class="lead honey-text">
+                    At Honey Haven, we are passionate about bringing you the finest organic honey sourced directly from local farms.
+                    Our commitment to sustainable beekeeping ensures that every jar of honey is packed with pure goodness.
+                </p>
+            </div>
+            <div class="col-lg-6 order-lg-0">
+                <img src="../images/IMG-20240921-WA0061.jpg" alt="About Honey Haven" class="img-thumbnail rounded-5">
             </div>
         </div>
-    </section>
-    <!-- end of about us -->
+    </div>
+</section>
 
-    <!-- newsletter -->
-    <section id="newsletter" class="py-5">
-        <div class="container">
-            <div class="d-flex flex-column align-items-center justify-content-center">
-                <div class="title text-center pt-3 pb-5">
-                    <h2 class="position-relative d-inline-block ms-4">Newsletter Subscription</h2>
-                </div>
-
-                <p class="text-center text-muted">Subscribe to our newsletter for the latest updates on our organic honey collection and special offers.</p>
-                <div class="input-group mb-3 mt-3">
-                    <input type="text" class="form-control" placeholder="Enter Your Email ...">
-                    <button class="btn btn-primary" type="submit">Subscribe</button>
-                </div>
+<!-- Newsletter Section -->
+<section id="newsletter" class="py-5 honey-bg-warm">
+    <div class="container">
+        <div class="d-flex flex-column align-items-center justify-content-center">
+            <div class="title text-center pt-3 pb-5">
+                <h2 class="position-relative d-inline-block ms-4 honey-heading">Newsletter Subscription</h2>
+            </div>
+            <p class="text-center honey-text">Subscribe to our newsletter for the latest updates on our organic honey collection and special offers.</p>
+            <div class="input-group mb-3 mt-3">
+                <input type="text" class="form-control" placeholder="Enter Your Email ...">
+                <button class="btn btn-honey" type="submit">Subscribe</button>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
     <!-- end of newsletter -->
 
     <!-- footer -->
@@ -178,7 +199,8 @@
             <div class="row text-white g-4">
                 <div class="col-md-6 col-lg-3">
                     <a class="text-uppercase text-decoration-none brand text-white" href="index.html">Honey Haven</a>
-                    <p class="text-white text-muted mt-3">Honey Haven is your trusted source for premium organic honey. Sourced from sustainable farms, our honey is as pure as nature intended.</p>
+                    <p class="text-white text-muted mt-3">Honey Haven is your trusted source for premium organic honey.
+                        Sourced from sustainable farms, our honey is as pure as nature intended.</p>
                 </div>
 
                 <div class="col-md-6 col-lg-3">
@@ -276,4 +298,5 @@
     <!-- custom js -->
     <script src="js/script.js"></script>
 </body>
+
 </html>
