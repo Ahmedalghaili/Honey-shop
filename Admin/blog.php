@@ -1,12 +1,12 @@
-
 <!-- blogs -->
 <section id="blogs" class="py-5 bg-white">
     <div class="container">
         <div class="title text-center py-5">
-            <h2 class="position-relative d-inline-block">Honey Chronicles: Our Latest Blog</h2>
+            <h2 class="hh d-inline-block">Honey Chronicles: Our Latest Blog</h2>
         </div>
 
         <div class="row g-3">
+            <!-- First Blog Post -->
             <div class="card border-0 col-md-6 col-lg-4 bg-transparent my-3">
                 <img src="../imag/IMG-20240921-WA0053.jpg" alt="Yemeni Sumur Honey" class="img-fluid custom-img">
                 <div class="card-body px-0">
@@ -17,10 +17,11 @@
                             <span class="fw-bold">Author: </span>Honey Haven Team
                         </small>
                     </p>
-                    <a href="#" class="btn">Read More</a>
+                    <a href="blog1.php" class="btn">Read More</a>
                 </div>
             </div>
 
+            <!-- Second Blog Post -->
             <div class="card border-0 col-md-6 col-lg-4 bg-transparent my-3">
                 <img src="../imag/IMG-20240921-WA0075.jpg" alt="Royal Sidr Honey" class="img-fluid custom-img">
                 <div class="card-body px-0">
@@ -31,10 +32,11 @@
                             <span class="fw-bold">Author: </span>Honey Haven Team
                         </small>
                     </p>
-                    <a href="#" class="btn">Read More</a>
+                    <a href="blog2.php" class="btn">Read More</a>
                 </div>
             </div>
 
+            <!-- Third Blog Post -->
             <div class="card border-0 col-md-6 col-lg-4 bg-transparent my-3">
                 <img src="../images/IMG-20240921-WA0061.jpg" alt="Honey Benefits" class="img-fluid custom-img">
                 <div class="card-body px-0">
@@ -45,7 +47,7 @@
                             <span class="fw-bold">Author: </span>Honey Haven Team
                         </small>
                     </p>
-                    <a href="#" class="btn">Read More</a>
+                    <a href="blog3.php" class="btn">Read More</a>
                 </div>
             </div>
         </div>

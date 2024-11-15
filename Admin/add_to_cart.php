@@ -1,68 +1,67 @@
 <?php
-session_start();
-require 'db.php'; // Include the database connection
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-// Check if user is logged in
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    echo 'Please log in to add items to your cart.';
+require 'db.php'; // Database connection
+
+// Get product ID and quantity from the POST request
+$product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
+$quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
+
+// Validate product ID and quantity
+if ($product_id <= 0 || $quantity <= 0) {
+    echo json_encode(['success' => false, 'message' => 'Invalid product or quantity.']);
     exit;
 }
 
-// Get the user ID from the session
-$user_id = $_SESSION['user_id'];
+// Check if the user is logged in
+if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
+    // User is logged in, add to cart in database
+    $user_id = $_SESSION['user_id']; // Retrieve user ID from session
 
-// Check if product ID and quantity are sent via POST
-if (isset($_POST['product_id']) && isset($_POST['quantity'])) {
-    $product_id = (int) $_POST['product_id'];
-    $quantity = (int) $_POST['quantity'];
-
-    // Ensure the product exists
-    $stmt = $conn->prepare("SELECT * FROM product WHERE product_id = ?");
-    $stmt->bind_param("i", $product_id);
+    // Check if the product exists in the cart
+    $cartCheckQuery = "SELECT quantity FROM cart WHERE user_id = ? AND product_id = ?";
+    $stmt = $conn->prepare($cartCheckQuery);
+    $stmt->bind_param('ii', $user_id, $product_id);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        $product = $result->fetch_assoc();
-        $price = $product['price'];
-        $total_price = $price * $quantity;
-
-        // Step 1: Insert the order into the 'order' table
-        $insert_order_query = "INSERT INTO `order` (user_id, total_price, order_status, shipping_address)
-                               VALUES (?, ?, 'pending', '')";
-        $insert_order_stmt = $conn->prepare($insert_order_query);
-        $insert_order_stmt->bind_param("id", $user_id, $total_price);
-
-        if ($insert_order_stmt->execute()) {
-            // Get the newly inserted order ID
-            $order_id = $conn->insert_id;
-
-            // Step 2: Insert into the 'order_product' table to link products to the order
-            $insert_order_product_query = "INSERT INTO `order_product` (order_id, product_id, quantity, price_at_order)
-                                           VALUES (?, ?, ?, ?)";
-            $insert_order_product_stmt = $conn->prepare($insert_order_product_query);
-            $insert_order_product_stmt->bind_param("iiid", $order_id, $product_id, $quantity, $price);
-
-            if ($insert_order_product_stmt->execute()) {
-                echo 'Product added to cart.';
-            } else {
-                echo 'Error adding product to order_product: ' . $insert_order_product_stmt->error;
-            }
-
-            $insert_order_product_stmt->close();
-        } else {
-            echo 'Error adding order: ' . $insert_order_stmt->error;
-        }
-
-        $insert_order_stmt->close();
+        // Update quantity if product already in cart
+        $cartUpdateQuery = "UPDATE cart SET quantity = quantity + ? WHERE user_id = ? AND product_id = ?";
+        $stmt = $conn->prepare($cartUpdateQuery);
+        $stmt->bind_param('iii', $quantity, $user_id, $product_id);
     } else {
-        echo 'Product not found.';
+        // Insert new item in the cart
+        $cartInsertQuery = "INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($cartInsertQuery);
+        $stmt->bind_param('iii', $user_id, $product_id, $quantity);
+    }
+
+    if ($stmt->execute()) {
+        echo json_encode(['success' => true, 'message' => 'Product added to cart successfully!']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Failed to add product to cart.']);
     }
 
     $stmt->close();
+    $conn->close();
 } else {
-    echo 'Invalid request.';
-}
+    // User is not logged in, add to session-based cart
+    if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = []; // Initialize cart if not set
+    }
 
-$conn->close();
+    // Check if the product already exists in the session cart
+    if (isset($_SESSION['cart'][$product_id])) {
+        // If it exists, increase the quantity
+        $_SESSION['cart'][$product_id] += $quantity;
+    } else {
+        // If it doesn't exist, add it to the cart
+        $_SESSION['cart'][$product_id] = $quantity;
+    }
+
+    echo json_encode(['success' => true, 'message' => 'Product added to cart successfully!']);
+}
 ?>

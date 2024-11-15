@@ -1,12 +1,9 @@
-<?php
+<?php 
 session_start();
 require 'db.php';
 
 // Check if the user is logged in
-if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header("Location: login_users.php");
-    exit;
-}
+$loggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
 
 // Get the product_id from the URL query string
 $product_id = isset($_GET['product_id']) ? (int)$_GET['product_id'] : 0;
@@ -15,7 +12,7 @@ $quantity = isset($_GET['quantity']) ? (int)$_GET['quantity'] : 1; // Default qu
 // Ensure a valid product ID is provided
 if ($product_id > 0) {
     // Fetch product details from the product table
-    $stmt = $conn->prepare("SELECT * FROM product WHERE product_id = ?");
+    $stmt = $conn->prepare("SELECT * FROM product WHERE product_id = ? ");
     $stmt->bind_param("i", $product_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -43,6 +40,7 @@ $conn->close();
 <html lang="en">
 
 <head>
+    <!-- (Head content remains unchanged) -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($name); ?> - Honey Haven</title>
@@ -57,6 +55,7 @@ $conn->close();
     <link rel="stylesheet" href="../css/main.css">
 
     <style>
+        /* (CSS styles remain unchanged) */
         body {
             font-family: 'Open Sans', sans-serif;
             background-color: #f9f9f9;
@@ -113,7 +112,7 @@ $conn->close();
 </head>
 
 <body>
-    <!-- Navbar -->
+    <!-- (Navbar remains unchanged) -->
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
             <a class="navbar-brand d-flex justify-content-between align-items-center order-lg-0" href="index.php">
@@ -139,7 +138,7 @@ $conn->close();
                         <i class="fa fa-user"></i> <!-- User Icon -->
                     </button>
 
-                    <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true): ?>
+                    <?php if ($loggedIn): ?>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="./logout.php"><i class="fa fa-sign-out"></i> Logout</a></li>
                         </ul>
@@ -190,28 +189,56 @@ $conn->close();
         </div>
     </div>
 
+    <!-- Pass the login status to JavaScript -->
+    <script>
+        var loggedIn = <?php echo json_encode($loggedIn); ?>;
+        var productId = <?php echo json_encode($product_id); ?>;
+    </script>
+
     <script>
         document.getElementById('addToCartBtn').addEventListener('click', function() {
-            var productId = <?php echo $product_id; ?>;
             var quantity = document.getElementById('quantity').value;
+
+            if (!loggedIn) {
+                // If not logged in, redirect to the login page
+                if (confirm('You need to log in to add items to your cart. Redirect to login page?')) {
+                    window.location.href = 'login_users.php';
+                }
+                return;
+            }
 
             // Create an AJAX request to send product and quantity to the server
             var xhr = new XMLHttpRequest();
             xhr.open('POST', 'add_to_cart.php', true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    alert(xhr.responseText); // Show response from add_to_cart.php
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        try {
+                            var response = JSON.parse(xhr.responseText);
+                            if (response.success) {
+                                alert('Product added to cart successfully!');
+                            } else {
+                                alert(response.message || 'Failed to add product to cart.');
+                            }
+                        } catch (e) {
+                            console.error('Invalid JSON response');
+                            alert('An unexpected error occurred.');
+                        }
+                    } else {
+                        console.error('Error adding product to cart');
+                        alert('Failed to add product to cart.');
+                    }
                 }
             };
-            xhr.send('product_id=' + productId + '&quantity=' + quantity);
+            xhr.send('product_id=' + encodeURIComponent(productId) + '&quantity=' + encodeURIComponent(quantity));
         });
     </script>
  
- <?php include 'blog.php'; ?>
+    <?php include 'blog.php'; ?>
     <div class="title text-center py-5 bg-white">
-            <h2 class="d-inline-block">You may also like</h2>
-        </div>
+        <h2 class="d-inline-block">You may also like</h2>
+    </div>
     <?php include 'product.php'; ?>
     <!-- Footer -->
     <!-- Footer Section -->

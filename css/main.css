@@ -90,6 +90,9 @@ footer a:hover {
 .navbar-nav .nav-link {
     color: #270c00; /* Updated color */
 }
+.honey-heading {
+    color: black !important; /* Overrides any other color settings */
+}
 
 .navbar-nav .nav-link:hover {
     color: #e65100; /* Optional hover color */
@@ -109,11 +112,11 @@ body {
 }
 
 .honey-text {
-    color: #5c4033 !important; /* Darker brown text */
+    color: black !important; /* Darker brown text */
 }
 
 .honey-heading {
-    color: #a25e3b !important; /* Rich honey color for headings */
+    color: #030303 !important; /* Rich honey color for headings */
 }
 
 .btn-honey {

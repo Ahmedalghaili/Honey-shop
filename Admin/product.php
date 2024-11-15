@@ -4,6 +4,9 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require 'db.php'; // Database connection
 
+// Determine if the user is logged in
+$loggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
+
 // Fetch all products from the 'product' table first
 $productQuery = "SELECT * FROM product";
 $productResult = $conn->query($productQuery); // Save the result for products
@@ -45,26 +48,50 @@ $productResult = $conn->query($productQuery); // Save the result for products
     </div>
 </section>
 
+<!-- Pass the login status to JavaScript -->
+<script>
+    var loggedIn = <?php echo json_encode($loggedIn); ?>;
+</script>
+
 <script>
     // Add to Cart functionality using AJAX
     document.querySelectorAll('.add-to-cart-btn').forEach(function(button) {
         button.addEventListener('click', function() {
             var productId = this.getAttribute('data-product-id');
 
+            if (!loggedIn) {
+                // If not logged in, redirect to the login page
+                if (confirm('You need to log in to add items to your cart. Redirect to login page?')) {
+                    window.location.href = 'login_users.php';
+                }
+                return;
+            }
+
             // Create AJAX request to add product to cart
             var xhr = new XMLHttpRequest();
             xhr.open('POST', 'add_to_cart.php', true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onreadystatechange = function() {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    console.log('Product added to cart: ' + xhr.responseText);
-                    alert('Product added to cart successfully!');
-                } else if (xhr.readyState == 4) {
-                    console.error('Error adding product to cart');
-                    alert('Failed to add product to cart');
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        try {
+                            var response = JSON.parse(xhr.responseText);
+                            if (response.success) {
+                                alert('Product added to cart successfully!');
+                            } else {
+                                alert(response.message || 'Failed to add product to cart.');
+                            }
+                        } catch (e) {
+                            console.error('Invalid JSON response');
+                            alert('An unexpected error occurred.');
+                        }
+                    } else {
+                        console.error('Error adding product to cart');
+                        alert('Failed to add product to cart.');
+                    }
                 }
             };
-            xhr.send('product_id=' + productId + '&quantity=1'); // Quantity is set to 1 by default
+            xhr.send('product_id=' + encodeURIComponent(productId) + '&quantity=1'); // Quantity is set to 1 by default
         });
     });
 </script>
