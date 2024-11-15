@@ -18,7 +18,7 @@ if ($isLoggedIn) {
     $user_id = $_SESSION['user_id']; // Assuming user_id is stored in session
 
     // Use backticks to escape the 'order' table name
-    $orderQuery = "SELECT COUNT(*) as itemCount FROM `order` WHERE user_id = ?";
+    $orderQuery = "SELECT COUNT(*) as itemCount FROM `order` WHERE user_id = ? AND order_status='pending'";
     $stmt = $conn->prepare($orderQuery);
     $stmt->bind_param('i', $user_id);
     $stmt->execute();
@@ -36,97 +36,425 @@ if ($isLoggedIn) {
 <html lang="en">
 
 <head>
+    <!-- Meta and Title -->
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Honey Haven</title>
-    <!-- fontawesome cdn -->
+    <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
         integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- bootstrap css -->
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="../bootstrap-5.0.2-dist/css/bootstrap.min.css">
-    <!-- custom css -->
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="../css/main.css">
+    <!-- Additional CSS from your code -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kaisei+Tokumin:wght@400;500;700&family=Poppins:wght@300;400;500&display=swap');
+
+        :root {
+            --lg-font: 'Kaisei Tokumin', serif;
+            --sm-font: 'Poppins', sans-serif;
+            --pink: #e5345b;
+        }
+
+        .custom-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .image-fixed-size {
+            height: 500px;
+            object-fit: cover;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .colorSS {
+            color: #270c00;
+        }
+
+        .navbar-brand span {
+            color: #270c00;
+        }
+
+        .btn-primary {
+            background-color: #ffab40;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #ff6f00;
+        }
+
+        .carousel {
+            background-image: url('../imag/IMG-20240921-WA0073.jpg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            /* Adjusts height for full coverage */
+        }
+
+        .carousel-caption {
+            color: #fff;
+            position: absolute;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            text-align: center;
+        }
+
+        .special-img img {
+            height: 250px;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        .special-list .col-md-6 {
+            padding: 20px;
+        }
+
+        footer {
+            background-color: #3e2723;
+        }
+
+        footer a {
+            color: #ffab40;
+        }
+
+        footer a:hover {
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .carousel {
+                height: 100vh;
+                /* Set to 100% of the viewport height on mobile */
+            }
+        }
+
+        .navbar-nav .nav-link {
+            color: #270c00;
+        }
+
+        .honey-heading {
+            color: black !important;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #e65100;
+        }
+
+        body {
+            font-family: var(--sm-font);
+        }
+
+        .honey-bg-light {
+            background-color: #fff5e1 !important;
+        }
+
+        .honey-bg-warm {
+            background-color: #ffe5b4 !important;
+        }
+
+        .honey-text {
+            color: black !important;
+        }
+
+        .honey-heading {
+            color: #030303 !important;
+        }
+
+        .btn-honey {
+            background-color: #f4a460 !important;
+            border-color: #f4a460 !important;
+        }
+
+        .btn-honey:hover {
+            background-color: #d68f4e !important;
+        }
+
+        .bg-primary {
+            background-color: var(--pink) !important;
+        }
+
+        .btn:not(.nav-btns button) {
+            background-color: #fff;
+            color: rgb(85, 85, 85);
+            padding: 10px 28px;
+            border-radius: 25px;
+            border: 1px solid rgb(85, 85, 85);
+        }
+
+        .btn:not(.nav-btns button):hover {
+            background-color: var(--pink);
+            color: #fff;
+            border-color: var(--pink);
+        }
+
+        .text-primary {
+            color: var(--pink) !important;
+        }
+
+        .navbar {
+            box-shadow: 0 3px 9px 3px rgba(0, 0, 0, 0.1);
+            /* Adjust or remove as desired */
+        }
+
+
+        .navbar-brand img {
+            width: 30px;
+        }
+
+        .navbar-brand span {
+            letter-spacing: 2px;
+            font-family: var(--lg-font);
+        }
+
+        .nav-link:hover {
+            color: var(--pink) !important;
+        }
+
+        .nav-item {
+            border-bottom: 0.5px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Header */
+        #header {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #header img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            #header {
+                height: auto;
+            }
+        }
+
+        .image-about {
+            border-radius: 2.5rem;
+        }
+
+        .carousel-inner h1 {
+            font-size: 60px;
+            font-family: var(--lg-font);
+        }
+
+        .carousel-item .btn {
+            border-color: #fff !important;
+        }
+
+        .carousel-item .btn:hover {
+            border-color: var(--pink) !important;
+        }
+
+        .title h2::before {
+            position: absolute;
+            content: "";
+            width: 4px;
+            height: 50px;
+            background-color: var(--pink);
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .active-filter-btn {
+            background-color: var(--pink) !important;
+            color: #fff !important;
+            border-color: var(--pink) !important;
+        }
+
+        .filter-button-group .btn:hover {
+            color: #fff !important;
+        }
+
+        .collection-img span {
+            top: 20px;
+            right: 20px;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+        }
+
+        .special-img span {
+            top: 20px;
+            right: 20px;
+        }
+
+        .special-list .btn {
+            padding: 8px 20px !important;
+        }
+
+        .special-img img {
+            transition: all 0.3s ease;
+        }
+
+        .special-img:hover img {
+            transform: scale(1.2);
+        }
+
+        #offers {
+            background: url(../IMG.jpg) center/cover no-repeat;
+        }
+
+        #offers .row {
+            min-height: 60vh;
+        }
+
+        offers-content span {
+            font-size: 28px;
+        }
+
+        offers-content h2 {
+            font-size: 60px;
+            font-family: var(--lg-font);
+        }
+
+        offers-content .btn {
+            border-color: transparent !important;
+        }
+
+        #about {
+            background-color: rgba(179, 179, 179, 0.05);
+        }
+
+        #newsletter p {
+            max-width: 600px;
+        }
+
+        #newsletter .input-group {
+            max-width: 500px;
+        }
+
+        #newsletter .form-control {
+            border-top-left-radius: 25px;
+            border-bottom-left-radius: 25px;
+        }
+
+        #newsletter .btn {
+            background-color: var(--pink);
+            color: #fff;
+            border-color: var(--pink);
+        }
+
+        #newsletter .btn:hover {
+            background-color: #000;
+            border-color: #000;
+        }
+
+        footer .brand {
+            font-family: var(--lg-font);
+            letter-spacing: 2px;
+        }
+
+        footer a {
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: var(--pink) !important;
+        }
+
+        @media (min-width: 992px) {
+            .nav-item {
+                border-bottom: none;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light text-white fixed-top">
-        <div class="container">
-            <a class="navbar-brand d-flex justify-content-between align-items-center order-lg-0" href="index.php">
-                <img src="../logo-bg1723844848-removebg-preview.png" alt="Honey Haven Logo"
-                    style="width: 75px; height: 55px;">
-                <span class="neww text-uppercase fw-bold ms-3">Honey Haven</span>
-            </a>
+   <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-md">
+  <div class="container d-flex justify-content-between align-items-center">
+    <!-- Brand -->
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <img src="../logo-bg1723844848-removebg-preview.png" style="width: 75px; height: 55px;" alt="Yemen Apiaries Logo" class="h-12 w-auto">
+      <span class="ms-2 text-xl font-bold text-gray-800">Yemen Apiaries</span>
+    </a>
 
-            <div class="order-lg-2 nav-btns">
-                <!-- Shopping Cart Button -->
-                <?php if ($isLoggedIn): ?>
-                    <a href="./my_orders.php" class="btn position-relative text-decoration-none text-dark">
-                        <i class="fa fa-shopping-cart"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge bg-primary">
-                            <?php echo $cartItemCount; ?>
-                        </span>
-                    </a>
-                <?php else: ?>
-                    <a href="./login_users.php" class="btn position-relative text-decoration-none text-dark">
-                        <i class="fa fa-shopping-cart"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge bg-primary">0</span>
-                    </a>
-                <?php endif; ?>
+    <!-- Toggler Button for Mobile -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" 
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-                <!-- User Dropdown -->
-                <div class="btn-group">
-                    <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa fa-user"></i>
-                    </button>
+    <!-- Collapsible Content: Navbar Links and Right-Aligned Icons -->
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <!-- Centered Navbar Links -->
+      <ul class="navbar-nav mx-auto text-center mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link text-gray-700 hover:text-amber-600" href="#header">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-gray-700 hover:text-amber-600" href="#special">Specials</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-gray-700 hover:text-amber-600" href="#offers">Newsletter</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-gray-700 hover:text-amber-600" href="#blogs">Blog</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-gray-700 hover:text-amber-600" href="#about">About Us</a>
+        </li>
+      </ul>
 
-                    <?php if ($isLoggedIn): ?>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="dropdown-item" href="./logout.php">
-                                    <i class="fa fa-sign-out"></i> Logout
-                                </a>
-                            </li>
-                        </ul>
-                    <?php else: ?>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="dropdown-item" href="login_users.php">
-                                    <i class="fa fa-sign-in"></i> Login
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="create_user.php">
-                                    <i class="fa fa-user-plus"></i> Register
-                                </a>
-                            </li>
-                        </ul>
-                    <?php endif; ?>
-                </div>
-            </div>
+      <!-- Cart and User Dropdown Aligned to the Right -->
+      <div class="d-flex align-items-center justify-content-center mt-3 mt-lg-0">
+        <!-- Cart Icon -->
+        <a href="<?php echo $isLoggedIn ? './my_orders.php' : './login_users.php'; ?>" class="btn btn-link position-relative me-2">
+          <i class="fas fa-shopping-cart"></i>
+          <?php if ($cartItemCount > 0): ?>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-amber-500">
+              <?php echo $cartItemCount; ?>
+              <span class="visually-hidden">cart items</span>
+            </span>
+          <?php endif; ?>
+        </a>
 
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse order-lg-1" id="navMenu">
-                <ul class="navbar-nav mx-auto text-center">
-                    <li class="nav-item px-3 py-2">
-                        <a class="nav-link text-uppercase text-black" href="#header">Home</a>
-                    </li>
-                    <li class="nav-item px-3 py-2">
-                        <a class="nav-link text-uppercase text-black" href="#special">Specials</a>
-                    </li>
-                    <li class="nav-item px-3 py-2">
-                        <a class="nav-link text-uppercase text-black" href="#about">About Us</a>
-                    </li>
-                </ul>
-            </div>
+        <!-- User Dropdown -->
+        <div class="dropdown">
+          <button class="btn btn-link" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <?php if ($isLoggedIn): ?>
+              <li><a class="dropdown-item" href="./logout.php">Logout</a></li>
+            <?php else: ?>
+              <li><a class="dropdown-item" href="login_users.php">Login</a></li>
+              <li><a class="dropdown-item" href="create_user.php">Register</a></li>
+            <?php endif; ?>
+          </ul>
         </div>
-    </nav>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+
     <!-- End of Navbar -->
 
     <!-- Header / Hero Section -->
@@ -135,26 +463,25 @@ if ($isLoggedIn) {
             <div class="text-center carousel-item active">
                 <h2 class="text-capitalize text-white">pure organic honey</h2>
                 <h1 class="text-uppercase py-2 fw-bold text-white">new arrivals</h1>
-                <a href="#" class="btn mt-3 text-uppercase">shop now</a>
+                <a href="#special" class="btn mt-3 text-uppercase">shop now</a>
             </div>
             <div class="text-center carousel-item">
                 <h2 class="text-capitalize text-white">best price & offer</h2>
                 <h1 class="text-uppercase py-2 fw-bold text-white">natural honey products</h1>
-                <a href="#" class="btn mt-3 text-uppercase">buy now</a>
+                <a href="#special" class="btn mt-3 text-uppercase">buy now</a>
             </div>
         </div>
     </header>
     <!-- End of Header -->
 
     <!-- Special Section -->
-    <div class="title text-center py-5 bg-white">
+    <div class="title text-center py-5 bg-white" id="special">
         <h2 class="d-inline-block">Special Honey Selection</h2>
     </div>
     <?php include 'product.php'; ?>
-
     <!-- End of Special Section -->
 
-    <!-- Blogs -->
+    <!-- Offers Section -->
     <section id="offers" class="py-5">
         <div class="container">
             <div
@@ -168,8 +495,11 @@ if ($isLoggedIn) {
             </div>
         </div>
     </section>
+    <!-- End of Offers Section -->
+
+    <!-- Blog Section -->
     <?php include 'blog.php'; ?>
-    <!-- End of Blogs -->
+    <!-- End of Blog Section -->
 
     <!-- About Us Section -->
     <section id="about" class="py-5">
@@ -275,6 +605,9 @@ if ($isLoggedIn) {
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Script for Navbar Background Change -->
+
+    <!-- Other Scripts -->
     <script src="js/jquery-3.6.0.js"></script>
     <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.js"></script>
     <script src="js/script.js"></script>

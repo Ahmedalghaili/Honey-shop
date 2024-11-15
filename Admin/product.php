@@ -52,20 +52,11 @@ $productResult = $conn->query($productQuery); // Save the result for products
 <script>
     var loggedIn = <?php echo json_encode($loggedIn); ?>;
 </script>
-
 <script>
     // Add to Cart functionality using AJAX
     document.querySelectorAll('.add-to-cart-btn').forEach(function(button) {
         button.addEventListener('click', function() {
             var productId = this.getAttribute('data-product-id');
-
-            if (!loggedIn) {
-                // If not logged in, redirect to the login page
-                if (confirm('You need to log in to add items to your cart. Redirect to login page?')) {
-                    window.location.href = 'login_users.php';
-                }
-                return;
-            }
 
             // Create AJAX request to add product to cart
             var xhr = new XMLHttpRequest();
